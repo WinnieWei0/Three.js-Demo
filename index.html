@@ -37,18 +37,22 @@
       // geometry.faces[i+1].color.setHex(hex);
     }
     let geometry2 = new THREE.PlaneGeometry()
-    for (var i = 0; i < geometry2.faces.length; i++) {
-      var hex = Math.random() * 0xffffff;
-      geometry2.faces[i].color.setHex(hex);
-      // geometry.faces[i+1].color.setHex(hex);
-    }
+    geometry2.faces[0].color.setHex(0x0094ff)
+    // for (var i = 0; i < geometry2.faces.length; i++) {
+    //   var hex = Math.random() * 0xffffff;
+    //   geometry2.faces[i].color.setHex(hex);
+    //   // geometry.faces[i+1].color.setHex(hex);
+    // }
     let material = new THREE.MeshBasicMaterial({
       vertexColors: THREE.FaceColors
     }) //基础网络材质，简单着色
     let cube = new THREE.Mesh(geometry, material) //创建网格类
-    cube.position.set(1,1,0)
+    // cube.position.set(1,1,0)
     let cube2=new THREE.Mesh(geometry2,material)
-    cube.position.set(-1,-1,0)
+    cube2.position.set(1,0,1)
+    cube2.rotation.y=45
+    cube2.rotation.x=45
+    cube2.rotation.z=45
     let group=new THREE.Object3D()
     group.add(cube)
     group.add(cube2)
@@ -60,6 +64,8 @@
       requestAnimationFrame(animate) //window.requestAnimationFrame()告诉浏览器希望动画，并在下次重绘前调用animate来更新动画
       // cube.rotation.x += 0.01
       // cube.rotation.y += 0.01
+      // group.rotation.x += 0.01
+      group.rotation.y += 0.01
       renderer.render(scene, camera)
     }
     animate()
