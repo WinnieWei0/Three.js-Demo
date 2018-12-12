@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    canvas {
+      width: 1%;
+      height: 100%
+    }
+  </style>
+</head>
+
+<body>
+  <script src="./js/three.min.js"></script>
+
+  <script>
+    let scene = new THREE.Scene() //创建一个场景
+    let camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000) //透视摄像机，参数：1、视野角度；2、长宽比；3、近切面；4、远切面
+    let renderer = new THREE.WebGLRenderer() //渲染器
+    renderer.setSize(window.innerWidth, window.innerHeight) //设置视口大小
+    document.body.appendChild(renderer.domElement) //自动创建canvas，添加到页面中
+
+    // let geometry = new THREE.BoxGeometry(1, 1, 1) //创建立方体，参数：长；宽；高
+    // let geometry = new THREE.ConeGeometry(1,1,4) //创建圆锥体，参数：底部半径，高，四段
+    let geometry = new THREE.TetrahedronGeometry() //创建四面体，参数：半径
+    for (var i = 0; i < geometry.faces.length; i++) {
+      var hex = Math.random() * 0xffffff;
+      geometry.faces[i].color.setHex(hex);
+      // geometry.faces[i+1].color.setHex(hex);
+    }
+    let geometry2 = new THREE.PlaneGeometry()
+    for (var i = 0; i < geometry2.faces.length; i++) {
+      var hex = Math.random() * 0xffffff;
+      geometry2.faces[i].color.setHex(hex);
+      // geometry.faces[i+1].color.setHex(hex);
+    }
+    let material = new THREE.MeshBasicMaterial({
+      vertexColors: THREE.FaceColors
+    }) //基础网络材质，简单着色
+    let cube = new THREE.Mesh(geometry, material) //创建网格类
+    cube.position.set(1,1,0)
+    let cube2=new THREE.Mesh(geometry2,material)
+    cube.position.set(-1,-1,0)
+    let group=new THREE.Object3D()
+    group.add(cube)
+    group.add(cube2)
+    scene.add(group)
+    // scene.add(cube)
+    camera.position.z = 5
+
+    function animate() {
+      requestAnimationFrame(animate) //window.requestAnimationFrame()告诉浏览器希望动画，并在下次重绘前调用animate来更新动画
+      // cube.rotation.x += 0.01
+      // cube.rotation.y += 0.01
+      renderer.render(scene, camera)
+    }
+    animate()
+  </script>
+</body>
+
+</html>
