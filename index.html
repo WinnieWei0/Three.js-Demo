@@ -31,28 +31,45 @@
     // let geometry = new THREE.BoxGeometry(1, 1, 1) //创建立方体，参数：长；宽；高
     // let geometry = new THREE.ConeGeometry(1,1,4) //创建圆锥体，参数：底部半径，高，四段
     let geometry = new THREE.TetrahedronGeometry() //创建四面体，参数：半径
-    for (var i = 0; i < geometry.faces.length; i++) {
-      var hex = Math.random() * 0xffffff;
-      geometry.faces[i].color.setHex(hex);
-      // geometry.faces[i+1].color.setHex(hex);
-    }
-    let geometry2 = new THREE.PlaneGeometry()
-    geometry2.faces[0].color.setHex(0x0094ff)
-    // for (var i = 0; i < geometry2.faces.length; i++) {
+    // for (var i = 0; i < geometry.faces.length; i++) {
     //   var hex = Math.random() * 0xffffff;
-    //   geometry2.faces[i].color.setHex(hex);
-    //   // geometry.faces[i+1].color.setHex(hex);
+    //   geometry.faces[i].color.setHex(hex);
     // }
+    geometry.faces[0].color.setHex(0xff0000);
+    geometry.faces[1].color.setHex(0x00ff00);
+    geometry.faces[2].color.setHex(0x0000ff);
+    geometry.faces[3].color.setHex(0xffff00);
+    // let geometry2 = new THREE.PlaneGeometry()
+    // geometry2.faces[0].color.setHex(0x0094ff)
+let geometry2=new THREE.Geometry()
+geometry2.vertices.push(new THREE.Vector3(1,0,0))
+geometry2.vertices.push(new THREE.Vector3(0,1,0))
+geometry2.vertices.push(new THREE.Vector3(0,0,1))
+let normal=new THREE.Vector3(0,0,0)
+let color=new THREE.Color(0xff00ff)
+let materialIndex=0
+let face=new THREE.Face3(0,1,2,normal,color,materialIndex)
+geometry2.faces.push(face)
+geometry2.computeFaceNormals()
+geometry2.computeVertexNormals()
+
     let material = new THREE.MeshBasicMaterial({
       vertexColors: THREE.FaceColors
     }) //基础网络材质，简单着色
     let cube = new THREE.Mesh(geometry, material) //创建网格类
     // cube.position.set(1,1,0)
+    // cube.rotation.y=45
+    // cube.rotation.x=45
+    // cube.rotation.z=45
+
     let cube2=new THREE.Mesh(geometry2,material)
-    cube2.position.set(1,0,1)
-    cube2.rotation.y=45
-    cube2.rotation.x=45
-    cube2.rotation.z=45
+    cube2.position.set(1,-0.6,0)
+    // cube2.rotation.y=45
+    // cube2.rotation.x=35
+    // cube2.rotation.z=45
+    cube2.rotation.y=60
+    // cube2.rotation.x=60
+    // cube2.rotation.z=45
     let group=new THREE.Object3D()
     group.add(cube)
     group.add(cube2)
@@ -66,6 +83,7 @@
       // cube.rotation.y += 0.01
       // group.rotation.x += 0.01
       group.rotation.y += 0.01
+      // group.rotation.z += 0.01
       renderer.render(scene, camera)
     }
     animate()
