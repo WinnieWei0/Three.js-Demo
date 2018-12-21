@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 
-	<head>
-		<title></title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no,
+<head>
+	<title></title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no,
 			minimum-scale=1.0, maximum-scale=1.0">
-		<style>
+	<style>
 		body {
 			font-family: Monospace;
 			background-color: #000;
@@ -32,32 +32,33 @@
 			text-decoration: underline;
 			cursor: pointer
 		}
-		.btnSel{
-			position:absolute;
+
+		.btnSel {
+			position: absolute;
 			top: 50px;
 			right: 30px;
 		}
-		</style>
-	</head>
+	</style>
+</head>
 
-	<body>
-		<div id="info">
-		</div>
-		<div class="btnSel">
-			<button id="btnA">a.jpg</button>
-			<button id="btnB">b.jpg</button>
-			<button id="btnC">c.jpg</button>
-		</div>
-		<script src="/js/three.min.js"></script>
+<body>
+	<div id="info">
+	</div>
+	<div class="btnSel">
+		<button id="btnA">a.jpg</button>
+		<button id="btnB">b.jpg</button>
+		<button id="btnC">c.jpg</button>
+	</div>
+	<script src="/js/three.min.js"></script>
 
-		<script src="/lib/TrackballControls.js"></script>
-		<script src="/lib/OBJLoader.js"></script>
-		<script src="/lib/MTLLoader.js"></script>
-		<script src="/lib/Detector.js"></script>
-		<script src="/lib/stats.min.js"></script>
-		<script src="/lib/dat.gui.min.js"></script>
+	<script src="/lib/TrackballControls.js"></script>
+	<script src="/lib/OBJLoader.js"></script>
+	<script src="/lib/MTLLoader.js"></script>
+	<script src="/lib/Detector.js"></script>
+	<script src="/lib/stats.min.js"></script>
+	<script src="/lib/dat.gui.min.js"></script>
 
-		<script>
+	<script>
 		if (!Detector.webgl) Detector.addGetWebGLMessage(); //兼容
 		function onWindowResize() {
 			camera.aspect = window.innerWidth / window.innerHeight;
@@ -110,43 +111,51 @@
 			scene.add(dirLight);
 		}
 
-function textureLoader(obj,i,img){
-	//0:左鞋,1:右眼,2:左眼,3:皮肤,4:服装,5:服装扣子,6:右鞋
-	var material=[]
-	var textureLoader=new THREE.TextureLoader()
-textureLoader.setPath('/lib/resources/')
-textureLoader.load(img,function(texture){
-	 material[i]=new THREE.MeshBasicMaterial({map:texture})
-	if(material[i]!=null){
-	obj[i].material=material[i]//服装
-	}
-})
-}
-var loaderArr
+		function textureLoader(obj, i, img) {
+			//0:左鞋,1:右眼,2:左眼,3:皮肤,4:服装,5:服装扣子,6:右鞋
+			var material = []
+			var textureLoader = new THREE.TextureLoader()
+			textureLoader.setPath('/lib/resources/')
+			textureLoader.load(img, function (texture) {
+				material[i] = new THREE.MeshBasicMaterial({
+					map: texture
+				})
+				if (material[i] != null) {
+					obj[i].material = material[i] //服装
+				}
+			})
+		}
+		var loaderArr
 
-document.getElementById('btnA').onclick=function(){
-textureLoader(loaderArr,0,'a.jpg')
-}
-document.getElementById('btnB').onclick=function(){
-textureLoader(loaderArr,0,'b.jpg')
-}
-document.getElementById('btnC').onclick=function(){
-textureLoader(loaderArr,0,'c.jpg')
-}
+		document.getElementById('btnA').onclick = function () {
+			textureLoader(loaderArr, 0, 'a.jpg')
+		}
+		document.getElementById('btnB').onclick = function () {
+			textureLoader(loaderArr, 0, 'b.jpg')
+		}
+		document.getElementById('btnC').onclick = function () {
+			textureLoader(loaderArr, 0, 'c.jpg')
+		}
 
 		function initModel() {
-				var objLoader = new THREE.OBJLoader()
-				objLoader.setPath('/lib/assets/file2/')
-				var crate
-objLoader.load('file.obj', function (obj) {
-loaderArr=obj.children
-textureLoader(obj.children,0,'a.jpg')
-	obj.children.forEach(function (child){
-		child.geometry.computeFaceNormals()
-		child.geometry.computeVertexNormals()
-	})
-					scene.add(obj)
+			var objLoader = new THREE.OBJLoader()
+			objLoader.setPath('/lib/assets/file2/')
+			var crate
+			objLoader.load('file.obj', function (obj) {
+				// console.log(obj)
+				// obj.center()
+				// obj.computeBoundingBox();
+				var bar=new THREE.Box3().setFromObject(obj)
+				console.log(bar)
+				loaderArr = obj.children
+				textureLoader(obj.children, 0, 'a.jpg')
+				obj.children.forEach(function (child) {
+					child.geometry.computeFaceNormals()
+					child.geometry.computeVertexNormals()
 				})
+				// obj.children[3].geometry.center()
+				scene.add(obj)
+			})
 		}
 
 		var controls
@@ -156,39 +165,39 @@ textureLoader(obj.children,0,'a.jpg')
 			controls.rotateSpeed = 3; //旋转速度
 			controls.zoomSpeed = 3; //缩放/移动速度
 			controls.panSpeed = 1; //平移速度
-			}
+		}
 
-			var stats
+		var stats
 
-			function initStats() {
-				stats = new Stats();
-				stats.domElement.style.position = 'absolute';
-				stats.domElement.style.top = '0px';
-				container.appendChild(stats.domElement);
-			}
+		function initStats() {
+			stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.top = '0px';
+			container.appendChild(stats.domElement);
+		}
 
-			function animate() {
-				renderer.render(scene, camera);
-				stats.update();
-				controls.update();
-				requestAnimationFrame(animate);
-			}
+		function animate() {
+			renderer.render(scene, camera);
+			stats.update();
+			controls.update();
+			requestAnimationFrame(animate);
+		}
 
-			function draw() {
-				initGui();
-				initRender();
-				initCamera();
-				initScene();
-				initLight();
-				initModel();
-				initControls();
-				initStats();
-				animate();
+		function draw() {
+			initGui();
+			initRender();
+			initCamera();
+			initScene();
+			initLight();
+			initModel();
+			initControls();
+			initStats();
+			animate();
 
-				window.addEventListener('resize', onWindowResize, false); //窗口调整
-			}
-		</script>
+			window.addEventListener('resize', onWindowResize, false); //窗口调整
+		}
+	</script>
 
-	</body>
+</body>
 
 </html>
