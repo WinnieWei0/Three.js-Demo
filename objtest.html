@@ -138,13 +138,18 @@
 		}
 
 		function initModel() {
+			var material=null
+			var mtlLoader=new THREE.MTLLoader()
+			mtlLoader.setPath('/lib/assets/file2/')
+			mtlLoader.load('file.mtl',function(m){
+				material=m
+			})
 			var objLoader = new THREE.OBJLoader()
 			objLoader.setPath('/lib/assets/file2/')
-			var crate
+			if(material){
+			objLoader.setMaterials(material)
+			}
 			objLoader.load('file.obj', function (obj) {
-				// console.log(obj)
-				// obj.center()
-				// obj.computeBoundingBox();
 				var bar=new THREE.Box3().setFromObject(obj)
 				console.log(bar)
 				loaderArr = obj.children
@@ -153,7 +158,6 @@
 					child.geometry.computeFaceNormals()
 					child.geometry.computeVertexNormals()
 				})
-				// obj.children[3].geometry.center()
 				scene.add(obj)
 			})
 		}
