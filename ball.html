@@ -141,16 +141,9 @@
 
 		function initModel() {
 			var objLoader1 = new THREE.GLTFLoader()
-			objLoader1.setPath('/lib/assets/file3/')
-			objLoader1.load('box.glb', function (obj) {
+			objLoader1.setPath('/lib/assets/ball/')
+			objLoader1.load('ball.glb', function (obj) {
 				scene.add(obj.scene)
-			})
-			var objLoader2 = new THREE.VTKLoader()
-			objLoader2.setPath('/lib/assets/')
-			objLoader2.load('bunny.vtk', function (obj) {
-        obj.computeVertexNormals()
-				loaderArr=obj
-				textureLoader(obj,'a.jpg')
 			})
 		}
 
