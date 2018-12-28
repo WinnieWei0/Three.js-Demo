@@ -104,7 +104,7 @@
 
 		function initCamera() {
 			camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 1e10);
-			camera.position.set(0, 40, 50)
+			camera.position.z = 0.2;
 		}
 
 		function initLight() {
@@ -143,12 +143,15 @@
 			var objLoader1 = new THREE.GLTFLoader()
 			objLoader1.setPath('/lib/assets/file3/')
 			objLoader1.load('box.glb', function (obj) {
+        // obj.computeVertexNormals()
 				scene.add(obj.scene)
 			})
 			var objLoader2 = new THREE.VTKLoader()
 			objLoader2.setPath('/lib/assets/')
 			objLoader2.load('bunny.vtk', function (obj) {
-        obj.computeVertexNormals()
+				obj.computeVertexNormals()
+				obj.computeBoundingSphere ()
+				// obj.computeCentroids()
 				loaderArr=obj
 				textureLoader(obj,'a.jpg')
 			})
@@ -162,7 +165,15 @@
 			// controls.zoomSpeed = 1; //缩放/移动速度
 			// controls.panSpeed = 1; //平移速度
 			// controls.dampingFactor=false
-			controls.enabled=true
+      controls.rotateSpeed = 1;
+      controls.zoomSpeed = 1;
+      controls.panSpeed = 1;
+
+      controls.noZoom = false;
+      controls.noPan = false;
+
+      controls.staticMoving = true;
+      controls.dynamicDampingFactor = 0.3;
 		}
 
 		var stats
