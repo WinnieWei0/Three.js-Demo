@@ -49,86 +49,12 @@
 	<script src="/lib/dat.gui.min.js"></script>
 
 	<script>
-		// if (!Detector.webgl) Detector.addGetWebGLMessage(); //兼容
-		// var container, stats;
-		// var camera, controls, scene, renderer;
-		// var cross;
-		// init();
-		// animate();
-
-		// function init() {
-		// 	camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 1e10);
-		// 	camera.position.set(0, 40, 50)
-
-		// 	controls = new THREE.TrackballControls(camera);
-		// 	controls.rotateSpeed = 5.0; //旋转速度
-		// 	controls.zoomSpeed = 5; //缩放/移动速度
-		// 	controls.panSpeed = 2; //平移速度
-		//   // controls.noZoom = false;
-		//   // controls.noPan = false;
-
-		//   controls.staticMoving = true;
-		//   // controls.dynamicDampingFactor = 0.3;
-
-		// 	scene = new THREE.Scene();
-		// 	scene.add(camera);
-
-		// 	// light
-		// 	scene.add(new THREE.AmbientLight(0x444444))
-		// 	var dirLight = new THREE.PointLight(); //平行光
-		// 	dirLight.position.set(0, 500, 0)
-		// 	scene.add(dirLight);
-
-
-		// 	var helper = new THREE.AxesHelper(50)
-		// 	scene.add(helper)
-
-		// 	var loader = new THREE.MTLLoader();
-		// 	loader.setPath('/lib/assets/')
-		// 	loader.load("file.mtl", function (geometry) {
-		// 		console.log(1111111,geometry)
-		// 		var objLoader = new THREE.OBJLoader()
-		// 		objLoader.setMaterials(geometry) //载入材质
-		// 		objLoader.setPath('/lib/assets/')
-		// 		objLoader.load('file.obj', function (obj) {
-		// 			console.log(2222,obj)
-		// 			obj.scale.set(100, 100, 100)
-		// 			scene.add(obj)
-		// 		})
-		// 	});
-
-		// 	renderer = new THREE.WebGLRenderer({
-		// 		antialias: true //是否抗锯齿
-		// 	});
-		// 	// renderer=new THREE.SVGRenderer()
-		// 	// renderer.sortObjects = true;
-		// 	renderer.setClearColor(0x000000, 1); //设置颜色及透明度
-		// 	renderer.setSize(window.innerWidth, window.innerHeight);
-		// 	container = document.createElement('div');
-		// 	document.body.appendChild(container);
-		// 	container.appendChild(renderer.domElement);
-		// 	// 频率
-		// 	stats = new Stats();
-		// 	stats.domElement.style.position = 'absolute';
-		// 	stats.domElement.style.top = '0px';
-		// 	container.appendChild(stats.domElement);
-
-		// 	window.addEventListener('resize', onWindowResize, false); //窗口调整
-		// }
-
 		function onWindowResize() {
 			camera.aspect = window.innerWidth / window.innerHeight;
 			camera.updateProjectionMatrix(); //更新相机投影矩阵
 			renderer.setSize(window.innerWidth, window.innerHeight);
 			controls.handleResize();
 		}
-
-		// function animate() {
-		// 	renderer.render(scene, camera);
-		// 	stats.update();
-		// 	controls.update();
-		// 	requestAnimationFrame(animate);
-		// }
 		draw()
 
 		var gui;

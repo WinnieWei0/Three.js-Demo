@@ -48,6 +48,7 @@
 		<button id="btnA">a.jpg</button>
 		<button id="btnB">b.jpg</button>
 		<button id="btnC">c.jpg</button>
+		<button id="btnd">d.jpg</button>
 	</div>
 	<script src="/js/three.min.js"></script>
 
@@ -116,10 +117,13 @@
 		var cube
 		var material
 
-		function textureLoader(obj,img) {
+		function textureLoader(obj, img) {
 			var textureLoader = new THREE.TextureLoader()
 			textureLoader.setPath('/lib/resources/')
 			textureLoader.load(img, function (texture) {
+				texture.wrapS = THREE.RepeatWrapping;
+				texture.wrapT = THREE.RepeatWrapping;
+				// texture.repeat.set(4, 4);
 				material = new THREE.MeshLambertMaterial({
 					map: texture
 				})
@@ -130,30 +134,33 @@
 		var loaderArr
 
 		document.getElementById('btnA').onclick = function () {
-			textureLoader(loaderArr,'a.jpg')
+			textureLoader(loaderArr, 'a.jpg')
 		}
 		document.getElementById('btnB').onclick = function () {
-			textureLoader(loaderArr,'b.jpg')
+			textureLoader(loaderArr, 'b.jpg')
 		}
 		document.getElementById('btnC').onclick = function () {
-			textureLoader(loaderArr,'c.jpg')
+			textureLoader(loaderArr, 'c.jpg')
+		}
+		document.getElementById('btnd').onclick = function () {
+			textureLoader(loaderArr, 'd.jpg')
 		}
 
 		function initModel() {
 			var objLoader1 = new THREE.GLTFLoader()
 			objLoader1.setPath('/lib/assets/file3/')
 			objLoader1.load('box.glb', function (obj) {
-        // obj.computeVertexNormals()
+				// obj.computeVertexNormals()
 				scene.add(obj.scene)
 			})
 			var objLoader2 = new THREE.VTKLoader()
 			objLoader2.setPath('/lib/assets/')
 			objLoader2.load('bunny.vtk', function (obj) {
 				obj.computeVertexNormals()
-				obj.computeBoundingSphere ()
+				obj.computeBoundingSphere()
 				// obj.computeCentroids()
-				loaderArr=obj
-				textureLoader(obj,'a.jpg')
+				loaderArr = obj
+				textureLoader(obj, 'a.jpg')
 			})
 		}
 
@@ -161,19 +168,15 @@
 
 		function initControls() {
 			controls = new THREE.TrackballControls(camera);
-			// controls.rotateSpeed = 1; //旋转速度
-			// controls.zoomSpeed = 1; //缩放/移动速度
-			// controls.panSpeed = 1; //平移速度
-			// controls.dampingFactor=false
-      controls.rotateSpeed = 1;
-      controls.zoomSpeed = 1;
-      controls.panSpeed = 1;
+			controls.rotateSpeed = 1;
+			controls.zoomSpeed = 1;
+			controls.panSpeed = 1;
 
-      controls.noZoom = false;
-      controls.noPan = false;
+			controls.noZoom = false;
+			controls.noPan = false;
 
-      controls.staticMoving = true;
-      controls.dynamicDampingFactor = 0.3;
+			controls.staticMoving = true;
+			controls.dynamicDampingFactor = 0.3;
 		}
 
 		var stats
