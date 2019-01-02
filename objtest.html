@@ -128,13 +128,13 @@
 		var loaderArr
 
 		document.getElementById('btnA').onclick = function () {
-			textureLoader(loaderArr, 0, 'a.jpg')
+			textureLoader(loaderArr, 4, 'a.jpg')
 		}
 		document.getElementById('btnB').onclick = function () {
-			textureLoader(loaderArr, 0, 'b.jpg')
+			textureLoader(loaderArr, 4, 'b.jpg')
 		}
 		document.getElementById('btnC').onclick = function () {
-			textureLoader(loaderArr, 0, 'c.jpg')
+			textureLoader(loaderArr, 4, 'c.jpg')
 		}
 
 		function initModel() {
@@ -153,7 +153,7 @@
 				var bar=new THREE.Box3().setFromObject(obj)
 				console.log(bar)
 				loaderArr = obj.children
-				textureLoader(obj.children, 0, 'a.jpg')
+				textureLoader(obj.children, 4, 'a.jpg')
 				obj.children.forEach(function (child) {
 					child.geometry.computeFaceNormals()
 					child.geometry.computeVertexNormals()

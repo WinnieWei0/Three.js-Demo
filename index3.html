@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title></title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no,
+			minimum-scale=1.0, maximum-scale=1.0">
+  <style>
+    body {
+      font-family: Monospace;
+      background-color: #000;
+      color: #fff;
+      margin: 0px;
+      overflow: hidden;
+    }
+
+    #info {
+      color: #fff;
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      text-align: center;
+      z-index: 100;
+      display: block;
+    }
+
+    #info a,
+    .button {
+      color: #f00;
+      font-weight: bold;
+      text-decoration: underline;
+      cursor: pointer
+    }
+
+    .btnSel {
+      position: absolute;
+      top: 50px;
+      right: 30px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="info">
+  </div>
+  <div class="btnSel">
+    <button id="btnA">a.jpg</button>
+    <button id="btnB">b.jpg</button>
+    <button id="btnC">c.jpg</button>
+  </div>
+  <script src="/js/three.min.js"></script>
+
+  <script src="/lib/TrackballControls.js"></script>
+  <script src="/lib/OBJLoader.js"></script>
+  <script src="/lib/MTLLoader.js"></script>
+  <script src="/lib/Detector.js"></script>
+  <script src="/lib/stats.min.js"></script>
+  <script src="/lib/dat.gui.min.js"></script>
+
+  <script>
+    if (!Detector.webgl) Detector.addGetWebGLMessage(); //兼容
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix(); //更新相机投影矩阵
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      controls.handleResize();
+    }
+    draw()
+
+    var gui;
+
+    function initGui() {
+      gui = {};
+      var datGui = new dat.GUI();
+    }
+
+    var renderer, container
+
+    function initRender() {
+      renderer = new THREE.WebGLRenderer({
+        antialias: true //是否抗锯齿
+      });
+      renderer.setClearColor(0x000000, 1); //设置颜色及透明度
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      container = document.createElement('div');
+      document.body.appendChild(container);
+      container.appendChild(renderer.domElement);
+    }
+
+    var scene
+
+    function initScene() {
+      scene = new THREE.Scene();
+      scene.add(camera);
+      var helper = new THREE.AxesHelper(50)
+      scene.add(helper)
+    }
+
+    var camera
+
+    function initCamera() {
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 1e10);
+      camera.position.set(0, 40, 50)
+    }
+
+    function initLight() {
+      scene.add(new THREE.AmbientLight(0x444444))
+      var dirLight = new THREE.PointLight(); //平行光
+      dirLight.position.set(0, 500, 0)
+      scene.add(dirLight);
+    }
+
+    function textureLoader(obj, img) {
+      //0:左鞋,1:右眼,2:左眼,3:皮肤,4:服装,5:服装扣子,6:右鞋
+      var material = []
+      var textureLoader = new THREE.TextureLoader()
+      textureLoader.setPath('/lib/resources/')
+      textureLoader.load(img, function (texture) {
+        // material[i] = new THREE.MeshBasicMaterial({
+        // 	map: texture
+        // })
+        // if (material[i] != null) {
+        // 	obj[i].material = material[i] //服装
+        // }
+        obj.forEach(function (child) {
+          child.material = new THREE.MeshBasicMaterial({
+            map: texture
+          })
+          child.geometry.computeFaceNormals()
+          child.geometry.computeVertexNormals()
+        })
+      })
+    }
+    var loaderArr
+
+    document.getElementById('btnA').onclick = function () {
+      textureLoader(loaderArr, 'a.jpg')
+    }
+    document.getElementById('btnB').onclick = function () {
+      textureLoader(loaderArr, 'b.jpg')
+    }
+    document.getElementById('btnC').onclick = function () {
+      textureLoader(loaderArr, 'c.jpg')
+    }
+
+    function initModel() {
+      var objLoader = new THREE.OBJLoader()
+      objLoader.setPath('/lib/assets/file4/')
+      objLoader.load('file.obj', function (obj) {
+        console.log(obj)
+        loaderArr = obj.children
+        textureLoader(obj.children, 'a.jpg')
+        scene.add(obj)
+      })
+    }
+
+    var controls
+
+    function initControls() {
+      controls = new THREE.TrackballControls(camera);
+      controls.rotateSpeed = 3; //旋转速度
+      controls.zoomSpeed = 3; //缩放/移动速度
+      controls.panSpeed = 1; //平移速度
+    }
+
+    var stats
+
+    function initStats() {
+      stats = new Stats();
+      stats.domElement.style.position = 'absolute';
+      stats.domElement.style.top = '0px';
+      container.appendChild(stats.domElement);
+    }
+
+    function animate() {
+      renderer.render(scene, camera);
+      stats.update();
+      controls.update();
+      requestAnimationFrame(animate);
+    }
+
+    function draw() {
+      initGui();
+      initRender();
+      initCamera();
+      initScene();
+      initLight();
+      initModel();
+      initControls();
+      initStats();
+      animate();
+
+      window.addEventListener('resize', onWindowResize, false); //窗口调整
+    }
+  </script>
+
+</body>
+
+</html>
