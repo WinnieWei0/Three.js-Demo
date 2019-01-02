@@ -5,7 +5,7 @@
   <title></title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=no,
-      minimum-scale=1.0, maximum-scale=1.0">
+			minimum-scale=1.0, maximum-scale=1.0">
   <style>
     body {
       font-family: Monospace;
@@ -32,95 +32,164 @@
       text-decoration: underline;
       cursor: pointer
     }
+
+    .btnSel {
+      position: absolute;
+      top: 50px;
+      right: 30px;
+    }
   </style>
 </head>
 
 <body>
   <div id="info">
   </div>
-
+  <div class="btnSel">
+    <button id="btnA">a.jpg</button>
+    <button id="btnB">b.jpg</button>
+    <button id="btnC">c.jpg</button>
+  </div>
   <script src="/js/three.min.js"></script>
 
   <script src="/lib/TrackballControls.js"></script>
+  <script src="/lib/OBJLoader.js"></script>
+  <script src="/lib/MTLLoader.js"></script>
   <script src="/lib/VTKLoader.js"></script>
   <script src="/lib/Detector.js"></script>
   <script src="/lib/stats.min.js"></script>
+  <script src="/lib/dat.gui.min.js"></script>
 
   <script>
-    if (!Detector.webgl) Detector.addGetWebGLMessage();
-    var container, stats;
-    var camera, controls, scene, renderer;
-    var cross;
-    init();
-    animate();
+    if (!Detector.webgl) Detector.addGetWebGLMessage(); //兼容
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix(); //更新相机投影矩阵
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      controls.handleResize();
+    }
+    draw()
 
-    function init() {
-      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 1e10);
-      camera.position.z = 0.2;
-      controls = new THREE.TrackballControls(camera);
+    var gui;
 
-      controls.rotateSpeed = 5.0;
-      controls.zoomSpeed = 5;
-      controls.panSpeed = 2;
+    function initGui() {
+      gui = {};
+      var datGui = new dat.GUI();
+    }
 
-      controls.noZoom = false;
-      controls.noPan = false;
+    var renderer, container
 
-      controls.staticMoving = true;
-      controls.dynamicDampingFactor = 0.3;
-
-      scene = new THREE.Scene();
-      scene.add(camera);
-
-      // light
-      var dirLight = new THREE.DirectionalLight(0xffffff);
-      dirLight.position.set(200, 200, 1000).normalize();
-
-      camera.add(dirLight);
-      camera.add(dirLight.target);
-      // A begin
-      var material = new THREE.MeshLambertMaterial({
-        color: 0xffffff,
-        side: THREE.DoubleSide
-      });
-      var loader = new THREE.VTKLoader();
-      loader.load("lib/assets/bunny.vtk", function (geometry) {
-        geometry.computeVertexNormals()
-        var mesh = new THREE.Mesh(geometry, material);
-        mesh.position.setY(-0.09);
-        scene.add(mesh);
-      });
-      // A end
-      // renderer
+    function initRender() {
       renderer = new THREE.WebGLRenderer({
-        antialias: false
+        antialias: true //是否抗锯齿
       });
-      renderer.setClearColor(0x000000, 1);
+      renderer.setClearColor(0x000000, 1); //设置颜色及透明度
       renderer.setSize(window.innerWidth, window.innerHeight);
       container = document.createElement('div');
       document.body.appendChild(container);
       container.appendChild(renderer.domElement);
+    }
 
+    var scene
+
+    function initScene() {
+      scene = new THREE.Scene();
+      scene.add(camera);
+      var helper = new THREE.AxesHelper(50)
+      scene.add(helper)
+    }
+
+    var camera
+
+    function initCamera() {
+      camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 1e10);
+      camera.position.set(0, 40, 50)
+    }
+
+    function initLight() {
+      scene.add(new THREE.AmbientLight(0x444444))
+      var dirLight = new THREE.PointLight(); //平行光
+      dirLight.position.set(0, 500, 0)
+      scene.add(dirLight);
+    }
+    var material, cube
+
+    function textureLoader(obj, img) {
+      //0:左鞋,1:右眼,2:左眼,3:皮肤,4:服装,5:服装扣子,6:右鞋
+
+      var textureLoader = new THREE.TextureLoader()
+      textureLoader.setPath('/lib/resources/')
+      textureLoader.load(img, function (texture) {
+        material = new THREE.MeshBasicMaterial({
+          map: texture
+        })
+        cube = new THREE.Mesh(obj, material)
+        scene.add(cube)
+      })
+    }
+    var loaderArr
+
+    document.getElementById('btnA').onclick = function () {
+      textureLoader(loaderArr, 'a.jpg')
+    }
+    document.getElementById('btnB').onclick = function () {
+      textureLoader(loaderArr, 'b.jpg')
+    }
+    document.getElementById('btnC').onclick = function () {
+      textureLoader(loaderArr, 'c.jpg')
+    }
+
+    function initModel() {
+      var objLoader = new THREE.VTKLoader()
+      objLoader.setPath('/lib/assets/')
+      objLoader.load('bunny.vtk', function (obj) {
+        console.log(obj)
+        loaderArr = obj
+        textureLoader(obj, 'a.jpg')
+        if (material) {
+          console.log(111111111)
+          // cube = new THREE.Mesh(obj, material)
+          // scene.add(cube)
+        }
+      })
+    }
+
+    var controls
+
+    function initControls() {
+      controls = new THREE.TrackballControls(camera);
+      controls.rotateSpeed = 3; //旋转速度
+      controls.zoomSpeed = 3; //缩放/移动速度
+      controls.panSpeed = 1; //平移速度
+    }
+
+    var stats
+
+    function initStats() {
       stats = new Stats();
       stats.domElement.style.position = 'absolute';
       stats.domElement.style.top = '0px';
       container.appendChild(stats.domElement);
-      //
-      window.addEventListener('resize', onWindowResize, false);
-    }
-
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      controls.handleResize();
     }
 
     function animate() {
-      requestAnimationFrame(animate);
-      controls.update();
       renderer.render(scene, camera);
       stats.update();
+      controls.update();
+      requestAnimationFrame(animate);
+    }
+
+    function draw() {
+      initGui();
+      initRender();
+      initCamera();
+      initScene();
+      initLight();
+      initModel();
+      initControls();
+      initStats();
+      animate();
+
+      window.addEventListener('resize', onWindowResize, false); //窗口调整
     }
   </script>
 
