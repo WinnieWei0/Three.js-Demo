@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <title></title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no,
-			minimum-scale=1.0, maximum-scale=1.0">
-  <style>
+  <head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no,
+      minimum-scale=1.0, maximum-scale=1.0">
+    <style>
     body {
       font-family: Monospace;
       background-color: #000;
@@ -38,31 +38,31 @@
       top: 50px;
       right: 30px;
     }
-  </style>
-</head>
+    </style>
+  </head>
 
-<body>
-  <div id="info">
-  </div>
-  <div class="btnSel">
-    <button id="btnA">a.jpg</button>
-    <button id="btnB">b.jpg</button>
-    <button id="btnC">c.jpg</button>
-    <button id="btnG">d.jpg</button>
-    <button id="btnD">浴缸</button>
-    <button id="btnE">模特1</button>
-    <button id="btnF">模特2</button>
-  </div>
-  <script src="/js/three.min.js"></script>
+  <body>
+    <div id="info">
+    </div>
+    <div class="btnSel">
+      <button id="btnA">a.jpg</button>
+      <button id="btnB">b.jpg</button>
+      <button id="btnC">c.jpg</button>
+      <button id="btnG">d.jpg</button>
+      <button id="btnD">浴缸</button>
+      <button id="btnE">模特1</button>
+      <button id="btnF">模特2</button>
+    </div>
+    <script src="/js/three.min.js"></script>
 
-  <script src="/lib/TrackballControls.js"></script>
-  <script src="/lib/OBJLoader.js"></script>
-  <script src="/lib/MTLLoader.js"></script>
-  <script src="/lib/Detector.js"></script>
-  <script src="/lib/stats.min.js"></script>
-  <script src="/lib/dat.gui.min.js"></script>
+    <script src="/lib/TrackballControls.js"></script>
+    <script src="/lib/OBJLoader.js"></script>
+    <script src="/lib/MTLLoader.js"></script>
+    <script src="/lib/Detector.js"></script>
+    <script src="/lib/stats.min.js"></script>
+    <script src="/lib/dat.gui.min.js"></script>
 
-  <script>
+    <script>
     if (!Detector.webgl) Detector.addGetWebGLMessage(); //兼容
     function onWindowResize() {
       camera.aspect = window.innerWidth / window.innerHeight;
@@ -114,7 +114,7 @@
       dirLight.position.set(0, 500, 0)
       scene.add(dirLight);
     }
-var imgt='a.jpg'
+    var imgt='a.jpg'
     function textureLoader(obj, img) {
       //0:左鞋,1:右眼,2:左眼,3:皮肤,4:服装,5:服装扣子,6:右鞋
       var material = []
@@ -122,20 +122,22 @@ var imgt='a.jpg'
       var textureLoader = new THREE.TextureLoader()
       textureLoader.setPath('/lib/resources/')
       textureLoader.load(img, function (texture) {
-        obj.forEach(function (child) {
-          child.material = new THREE.MeshBasicMaterial({
+      // textureLoader.load('c.jpg', function (texture2) {
+        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture.matrixAutoUpdate = false;  //法向更新
+        var material =new THREE.MeshBasicMaterial({
             map: texture
           })
+        obj.forEach(function (child) {
+          child.material =material
           child.geometry.computeFaceNormals()
           child.geometry.computeVertexNormals()
         })
+      // })
       })
     }
     function modelLoader(file){
-//       while(scene.children.length > 0){ 
-//     scene.remove(scene.children[0]); 
-// } 
-scene.remove.apply(scene, scene.children)
+      scene.remove.apply(scene, scene.children)
       var objLoader = new THREE.OBJLoader()
       objLoader.setPath('/lib/assets/obj/')
       objLoader.load(file, function (obj) {
@@ -219,8 +221,8 @@ scene.remove.apply(scene, scene.children)
 
       window.addEventListener('resize', onWindowResize, false); //窗口调整
     }
-  </script>
+    </script>
 
-</body>
+  </body>
 
 </html>
