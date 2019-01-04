@@ -55,12 +55,14 @@
     </div>
     <script src="/js/three.min.js"></script>
 
-    <script src="/lib/TrackballControls.js"></script>
+    <script src="/lib/OrbitControls.js"></script>
     <script src="/lib/OBJLoader.js"></script>
     <script src="/lib/MTLLoader.js"></script>
     <script src="/lib/Detector.js"></script>
     <script src="/lib/stats.min.js"></script>
     <script src="/lib/dat.gui.min.js"></script>
+    <script src="/lib/DragControls.js"></script>
+    <script src="/lib/TransformControls.js"></script>
 
     <script>
     if (!Detector.webgl) Detector.addGetWebGLMessage(); //兼容
@@ -124,7 +126,9 @@
       textureLoader.load(img, function (texture) {
       // textureLoader.load('c.jpg', function (texture2) {
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+        texture.minFilter=THREE.NearestFilter
         texture.matrixAutoUpdate = false;  //法向更新
+        texture.needsUpdate=true
         var material =new THREE.MeshBasicMaterial({
             map: texture
           })
@@ -133,15 +137,21 @@
           child.geometry.computeFaceNormals()
           child.geometry.computeVertexNormals()
         })
-      // })
       })
     }
     function modelLoader(file){
+      if(loaderArr){
+      for(let i=0;i<loaderArr.length-1;i++){
+        loaderArr[i].geometry.dispose()//清理内存
+        loaderArr[i].material.dispose()
+      }
+      loaderArr=null
+      }
       scene.remove.apply(scene, scene.children)
       var objLoader = new THREE.OBJLoader()
       objLoader.setPath('/lib/assets/obj/')
       objLoader.load(file, function (obj) {
-        console.log(obj)
+        // console.log(obj)
         loaderArr = obj.children
         textureLoader(obj.children,imgt )
         scene.add(obj)
@@ -184,12 +194,35 @@
     }
 
     var controls
+    var transformControls
 
     function initControls() {
-      controls = new THREE.TrackballControls(camera);
-      controls.rotateSpeed = 3; //旋转速度
-      controls.zoomSpeed = 3; //缩放/移动速度
-      controls.panSpeed = 1; //平移速度
+      // controls = new THREE.OrbitControls(camera);
+      // controls.rotateSpeed = 3; //旋转速度
+      // controls.zoomSpeed = 3; //缩放/移动速度
+      // controls.panSpeed = 1; //平移速度
+      // controls.rotateLft(50)
+      // 添加平移控件
+       transformControls = new THREE.TransformControls(camera, renderer.domElement);
+        scene.add(transformControls);
+
+        // 过滤不是 Mesh 的物体,例如辅助网格
+        var objects = [];
+        for (let i = 0; i < scene.children.length; i++) {
+            if (scene.children[i].isMesh) {
+                objects.push(scene.children[i]);
+            }
+        }
+        // 初始化拖拽控件
+        dragControls  = new THREE.DragControls(objects, camera, renderer.domElement);
+      dragControls .addEventListener('dragstart',function(event){
+        console.log(1111111111)
+        controls.enabled = false;
+      })
+      dragControls .addEventListener('dragend',function(event){
+        console.log(22222222222)
+        controls.enabled = true
+      })
     }
 
     var stats
@@ -204,7 +237,9 @@
     function animate() {
       renderer.render(scene, camera);
       stats.update();
-      controls.update();
+      // console.log(controls)
+      transformControls.update();
+      // controls.update();
       requestAnimationFrame(animate);
     }
 
