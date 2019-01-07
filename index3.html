@@ -56,6 +56,7 @@
     <script src="/js/three.min.js"></script>
 
     <script src="/lib/OrbitControls.js"></script>
+    <script src="/lib/TrackballControls.js"></script>
     <script src="/lib/OBJLoader.js"></script>
     <script src="/lib/MTLLoader.js"></script>
     <script src="/lib/Detector.js"></script>
@@ -70,7 +71,7 @@
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix(); //更新相机投影矩阵
       renderer.setSize(window.innerWidth, window.innerHeight);
-      controls.handleResize();
+      // controls.handleResize();
     }
     draw()
 
@@ -117,9 +118,9 @@
       scene.add(dirLight);
     }
     var imgt='a.jpg'
+    var material
     function textureLoader(obj, img) {
       //0:左鞋,1:右眼,2:左眼,3:皮肤,4:服装,5:服装扣子,6:右鞋
-      var material = []
       imgt=img
       var textureLoader = new THREE.TextureLoader()
       textureLoader.setPath('/lib/resources/')
@@ -129,7 +130,7 @@
         texture.minFilter=THREE.NearestFilter
         texture.matrixAutoUpdate = false;  //法向更新
         texture.needsUpdate=true
-        var material =new THREE.MeshBasicMaterial({
+        material =new THREE.MeshBasicMaterial({
             map: texture
           })
         obj.forEach(function (child) {
@@ -144,118 +145,155 @@
       for(let i=0;i<loaderArr.length-1;i++){
         loaderArr[i].geometry.dispose()//清理内存
         loaderArr[i].material.dispose()
-      }
-      loaderArr=null
-      }
-      scene.remove.apply(scene, scene.children)
-      var objLoader = new THREE.OBJLoader()
-      objLoader.setPath('/lib/assets/obj/')
-      objLoader.load(file, function (obj) {
+        }
+        loaderArr=null
+        }
+        scene.remove.apply(scene, scene.children)
+        var objLoader= new THREE.OBJLoader()
+        objLoader.setPath('/lib/assets/obj/')
+        objLoader.load(file, function (obj) {
         // console.log(obj)
-        loaderArr = obj.children
+        loaderArr= obj.children
         textureLoader(obj.children,imgt )
         scene.add(obj)
-      })
-    }
-    var loaderArr
+        })
+        }
+        var loaderArr
 
-    document.getElementById('btnA').onclick = function () {
-      textureLoader(loaderArr, 'a.jpg')
-    }
-    document.getElementById('btnB').onclick = function () {
-      textureLoader(loaderArr, 'b.jpg')
-    }
-    document.getElementById('btnC').onclick = function () {
-      textureLoader(loaderArr, 'c.jpg')
-    }
-    document.getElementById('btnG').onclick = function () {
-      textureLoader(loaderArr, 'd.jpg')
-    }
-    document.getElementById('btnD').onclick = function () {
-      modelLoader( 'file3.obj')
-    }
-    document.getElementById('btnE').onclick = function () {
-      modelLoader( 'file2.obj')
-    }
-    document.getElementById('btnF').onclick = function () {
-      modelLoader('file1.obj')
-    }
+        document.getElementById('btnA').onclick= function () {
+        textureLoader(loaderArr, 'a.jpg')
+        }
+        document.getElementById('btnB').onclick= function () {
+        textureLoader(loaderArr, 'b.jpg')
+        }
+        document.getElementById('btnC').onclick= function () {
+        textureLoader(loaderArr, 'c.jpg')
+        }
+        document.getElementById('btnG').onclick= function () {
+        textureLoader(loaderArr, 'd.jpg')
+        }
+        document.getElementById('btnD').onclick= function () {
+        modelLoader( 'file3.obj')
+        }
+        document.getElementById('btnE').onclick= function () {
+        modelLoader( 'file2.obj')
+        }
+        document.getElementById('btnF').onclick= function () {
+        modelLoader('file1.obj')
+        }
 
         function initModel() {
-          modelLoader('file1.obj')
-      // var objLoader = new THREE.OBJLoader()
-      // objLoader.setPath('/lib/assets/file4/')
-      // objLoader.load('file1.obj', function (obj) {
-      //   console.log(obj)
-      //   loaderArr = obj.children
-      //   textureLoader(obj.children, 'a.jpg')
-      //   scene.add(obj)
-      // })
-    }
-
-    var controls
-    var transformControls
-
-    function initControls() {
-      // controls = new THREE.OrbitControls(camera);
-      // controls.rotateSpeed = 3; //旋转速度
-      // controls.zoomSpeed = 3; //缩放/移动速度
-      // controls.panSpeed = 1; //平移速度
-      // controls.rotateLft(50)
-      // 添加平移控件
-       transformControls = new THREE.TransformControls(camera, renderer.domElement);
-        scene.add(transformControls);
-
-        // 过滤不是 Mesh 的物体,例如辅助网格
-        var objects = [];
-        for (let i = 0; i < scene.children.length; i++) {
-            if (scene.children[i].isMesh) {
-                objects.push(scene.children[i]);
-            }
+        modelLoader('file1.obj')
+        // var objLoader= new THREE.OBJLoader()
+        // objLoader.setPath('/lib/assets/file4/')
+        // objLoader.load('file1.obj', function (obj) {
+        // console.log(obj)
+        // loaderArr= obj.children
+        // textureLoader(obj.children, 'a.jpg')
+        // scene.add(obj)
+        // })
         }
-        // 初始化拖拽控件
-        dragControls  = new THREE.DragControls(objects, camera, renderer.domElement);
-      dragControls .addEventListener('dragstart',function(event){
-        console.log(1111111111)
-        controls.enabled = false;
-      })
-      dragControls .addEventListener('dragend',function(event){
-        console.log(22222222222)
-        controls.enabled = true
-      })
-    }
 
-    var stats
+        var controls
+        var dragControls
 
-    function initStats() {
-      stats = new Stats();
-      stats.domElement.style.position = 'absolute';
-      stats.domElement.style.top = '0px';
-      container.appendChild(stats.domElement);
-    }
+        function initControls() {
+        controls= new THREE.TrackballControls(camera);
+        // controls= new THREE.OrbitControls(camera);
+        controls.rotateSpeed= 3; //旋转速度
+        controls.zoomSpeed= 3; //缩放/移动速度
+        controls.panSpeed= 1; //平移速度
+        // controls.rotateLft(50)
+        // controls.screenSpacePanning=false
+        // 添加平移控件
+        // controls= new THREE.TransformControls(camera, renderer.domElement);
+        // scene.add(controls);
 
-    function animate() {
-      renderer.render(scene, camera);
-      stats.update();
-      // console.log(controls)
-      transformControls.update();
-      // controls.update();
-      requestAnimationFrame(animate);
-    }
+        // // 过滤不是 Mesh 的物体,例如辅助网格
+        // var objects= [];
+        // for (let i= 0; i <scene.children.length; i++) {
+        // if (scene.children[i].isMesh) {
+        // objects.push(scene.children[i]);
+        // }
+        // }
+        // // 初始化拖拽控件
+        // dragControls= new THREE.DragControls(objects, camera,renderer.domElement);
+        }
+//         var transverse //横
+//         // var vertical //竖
+//         var startX,startY,endX,endY
+//         function dragStart(event){
+//         startX=event.touches[0].clientX
+//         startY=event.touches[0].clientY
+//         }
+//         function dragMove(event){
+//           endX=event.touches[0].clientX
+//           endY=event.touches[0].clientY
+//           if(Math.abs(endX-startX)>Math.abs(endY-startY)){
+//             transverse=true
+//             // vertical=false
+//           }else{
+//             transverse=false
+//             // vertical=true
+//           }
+//           if(transverse){
+// console.log(true)
+//           }
+//         }
+//         renderer.domElement.addEventListener('touchstart',dragStart,{passive:false})
+//         renderer.domElement.addEventListener('touchend',function(event){
+//         // event.preventDefault()
+//         console.log(22222222222)
+//         // controls.enabled= true
+//         },{passive:false})
+//         renderer.domElement.addEventListener('touchmove',dragMove,{passive:false})
+//         renderer.domElement.addEventListener('mousedown',function(event){
+//         // event.preventDefault()
+//         console.log(44444444)
+//         // controls.enabled= false;
+//         },{passive:false})
+//         renderer.domElement.addEventListener('mousemove',function(event){
+//         // event.preventDefault()
+//         // console.log(555555555555)
+//         // controls.enabled= true
+//         },{passive:false})
+//         renderer.domElement.addEventListener('mouseup',function(event){
+//         // event.preventDefault()
+//         console.log(66666666)
+//         // controls.enabled= true
+//         },{passive:false})
 
-    function draw() {
-      initGui();
-      initRender();
-      initCamera();
-      initScene();
-      initLight();
-      initModel();
-      initControls();
-      initStats();
-      animate();
+        var stats
 
-      window.addEventListener('resize', onWindowResize, false); //窗口调整
-    }
+        function initStats() {
+        stats= new Stats();
+        stats.domElement.style.position= 'absolute';
+        stats.domElement.style.top= '0px';
+        container.appendChild(stats.domElement);
+        }
+
+        function animate() {
+        renderer.render(scene, camera);
+        stats.update();
+        // console.log(controls)
+        // controls.update();
+        controls.update();
+        requestAnimationFrame(animate);
+        }
+
+        function draw() {
+        initGui();
+        initRender();
+        initCamera();
+        initScene();
+        initLight();
+        initModel();
+        initControls();
+        initStats();
+        animate();
+
+        window.addEventListener('resize', onWindowResize, false); //窗口调整
+        }
     </script>
 
   </body>
